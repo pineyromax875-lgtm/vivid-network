@@ -26,11 +26,13 @@
         <a href="#features">Features</a>
         <a href="#commands">Commands</a>
         <a href="#docs">Docs</a>
+        <a href="#reviews">Reviews</a>
         <a href="#support">Support</a>
+        <a href="#admin">Staff</a>
       </nav>
 
       <div class="actions">
-        <a class="btn primary" id="inviteBtn" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Bot</a>
+        <a class="btn primary" id="inviteBtn" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Vivid</a>
         <button class="btn ghost" id="menuToggle" aria-label="Menu">☰</button>
       </div>
     </div>
@@ -98,6 +100,12 @@
       <div id="commandsList" class="commands-list">Loading commands…</div>
     </section>
 
+    <section id="reviews" class="container reviews">
+      <h2>Reviews</h2>
+      <p>What server owners and staff say about Vivid Network.</p>
+      <div id="reviewsList" class="commands-list">Loading reviews…</div>
+    </section>
+
     <section id="docs" class="container docs">
       <h2>Documentation</h2>
       <p>Basic setup:
@@ -117,6 +125,49 @@
         <a class="btn ghost" href="https://github.com/pineyromax875-lgtm/vivid-network" target="_blank" rel="noopener">Source / Issues</a>
       </p>
     </section>
+
+    <!-- Inline admin dashboard (hidden by default) -->
+    <section id="admin" class="container" style="display:none; margin-top:40px;">
+      <h2>Staff Dashboard</h2>
+      <section id="loginSection">
+        <p>This dashboard is a lightweight admin interface. For security, replace the demo passcode with a proper authentication system (OAuth, server-side sessions).</p>
+        <label for="passcode">Staff passcode</label>
+        <input id="passcode" type="password" placeholder="Enter staff passcode" />
+        <button id="loginBtn" class="btn primary">Login</button>
+        <p id="loginMsg" class="muted"></p>
+      </section>
+
+      <section id="dashboard" style="display:none;">
+        <h3>Reviews</h3>
+        <div id="adminReviews"></div>
+        <button id="addReviewBtn" class="btn outline">Add Review</button>
+
+        <h3>Site Content</h3>
+        <p>You can export current reviews as JSON or (optionally) push changes back to this repository using a personal access token (PAT). Be careful with tokens — treat them like passwords.</p>
+        <button id="exportBtn" class="btn">Export JSON</button>
+        <div style="margin-top:12px">
+          <label for="pat">(Optional) GitHub Personal Access Token</label>
+          <input id="pat" type="password" placeholder="Paste PAT to save directly (repo:contents scope)" style="width:60%" />
+          <button id="saveRepoBtn" class="btn outline">Save to GitHub</button>
+        </div>
+        <p id="saveMsg" class="muted"></p>
+      </section>
+
+      <template id="reviewTemplate">
+        <div class="command admin-review">
+          <div>
+            <strong class="r-name"></strong>
+            <div class="meta r-text"></div>
+            <div class="meta r-date"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost editBtn">Edit</button>
+            <button class="btn ghost deleteBtn">Delete</button>
+          </div>
+        </div>
+      </template>
+    </section>
+
   </main>
 
   <footer class="site-footer">
@@ -127,5 +178,19 @@
   </footer>
 
   <script src="script.js" defer></script>
+  <script src="admin.js" defer></script>
+  <script>
+    // show admin section when anchor #admin is used or when ?admin=1 is present
+    document.addEventListener('DOMContentLoaded', () => {
+      const hash = location.hash.replace('#','');
+      const params = new URLSearchParams(location.search);
+      if(hash === 'admin' || params.get('admin') === '1'){
+        const adminSec = document.getElementById('admin');
+        if(adminSec) adminSec.style.display = 'block';
+        // scroll to admin
+        setTimeout(() => { location.hash = 'admin'; }, 10);
+      }
+    });
+  </script>
 </body>
 </html>
