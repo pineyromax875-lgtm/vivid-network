@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vivid Network — Discord Bot</title>
+  <meta name="description" content="Vivid Network — powerful moderation, economy, and fun features for your Discord server." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23a855f7'/%3E%3Ctext x='50' y='57' font-size='38' text-anchor='middle' fill='white' font-family='Arial, Helvetica, sans-serif'%3EV%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Vivid Network — Discord Bot" />
+  <meta property="og:description" content="Moderation, economy, customizable commands, and more." />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#">
+        <!-- Inline SVG logo -->
+        <svg class="logo" width="40" height="40" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="48" fill="#7c3aed"/>
+          <text x="50" y="62" font-size="46" text-anchor="middle" fill="white" font-family="Segoe UI, Roboto, Arial">V</text>
+        </svg>
+        <span class="brand-text">Vivid Network</span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
+        <a href="#docs">Docs</a>
+        <a href="#support">Support</a>
+      </nav>
+
+      <div class="actions">
+        <a class="btn primary" id="inviteBtn" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Bot</a>
+        <button class="btn ghost" id="menuToggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1>Vivid Network</h1>
+          <p>Bring color and life to your server with moderation, economy, leveling, and fun modules — fully configurable.</p>
+          <p class="hero-ctas">
+            <a class="btn primary" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Vivid</a>
+            <a class="btn outline" href="https://discord.gg/sYEuS2fBD" target="_blank" rel="noopener">Join Support Server</a>
+          </p>
+        </div>
+        <div class="hero-card">
+          <h3>Quick stats</h3>
+          <ul>
+            <li><strong>Modules:</strong> Moderation · Economy · Music · Games</li>
+            <li><strong>Config:</strong> Per-server settings & role-based access</li>
+            <li><strong>Commands:</strong> See below (loaded live)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="container features">
+      <h2>Features</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <h3>Moderation</h3>
+          <p>Auto-moderation, warnings, timed mutes, and audit logs to keep your server safe.</p>
+        </div>
+        <div class="feature">
+          <h3>Economy & Levels</h3>
+          <p>Custom economy, shops, and leveling to boost engagement.</p>
+        </div>
+        <div class="feature">
+          <h3>Custom Commands</h3>
+          <p>Create custom responses and slash commands without redeploying the bot.</p>
+        </div>
+        <div class="feature">
+          <h3>Music & Games</h3>
+          <p>Play music, host mini-games, and run server events.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="commands" class="container commands">
+      <h2>Commands</h2>
+      <p>Commands are loaded from commands.json. Edit that file to update this list.</p>
+      <div id="commandsList" class="commands-list">Loading commands…</div>
+    </section>
+
+    <section id="docs" class="container docs">
+      <h2>Documentation</h2>
+      <p>Basic setup:
+        <ol>
+          <li>Invite the bot using the Invite button.</li>
+          <li>Use the <code>!setup</code> command to initialize or configure the server.</li>
+          <li>Adjust module settings in the dashboard (coming soon) or via commands.</li>
+        </ol>
+      </p>
+    </section>
+
+    <section id="support" class="container support">
+      <h2>Support</h2>
+      <p>Need help? Join the support server or open an issue on the bot's GitHub repository.</p>
+      <p>
+        <a class="btn outline" href="https://discord.gg/sYEuS2fBD" target="_blank" rel="noopener">Support Server</a>
+        <a class="btn ghost" href="https://github.com/pineyromax875-lgtm/vivid-network" target="_blank" rel="noopener">Source / Issues</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Vivid Network — Built with ❤️</p>
+      <p class="muted">Made for Discord communities · Replace BOT_INVITE_LINK and DISCORD_SERVER_INVITE in files before publishing.</p>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

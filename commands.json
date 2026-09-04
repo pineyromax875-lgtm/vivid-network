@@ -1,0 +1,27 @@
+[
+  {
+    "trigger": "!help",
+    "description": "Show help and command list.",
+    "category": "General"
+  },
+  {
+    "trigger": "!ban <user> [reason]",
+    "description": "Ban a user from the server.",
+    "category": "Moderation"
+  },
+  {
+    "trigger": "!mute <user> <duration>",
+    "description": "Temporarily mute a user.",
+    "category": "Moderation"
+  },
+  {
+    "trigger": "!balance",
+    "description": "Show your economy balance.",
+    "category": "Economy"
+  },
+  {
+    "trigger": "!play <song>",
+    "description": "Play music in voice channel.",
+    "category": "Music"
+  }
+]
