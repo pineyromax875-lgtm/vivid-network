@@ -38,8 +38,8 @@
         <a href="#reviews">Reviews</a>
         <a href="#gallery">Gallery</a>
         <a href="#about">About</a>
+        <a id="staffLink" href="#admin">Staff</a>
         <a href="#support">Support</a>
-        <a href="#admin">Staff</a>
       </nav>
 
       <div class="actions">
@@ -85,7 +85,98 @@
       <div id="aboutContent">Loading about content…</div>
     </section>
 
-    <!-- admin and other sections remain unchanged -->
+    <!-- Admin Dashboard (improved layout) -->
+    <section id="admin" class="container" style="display:none; margin-top:28px;">
+      <div class="admin-wrap">
+        <aside class="admin-sidebar" id="adminSidebar">
+          <div class="admin-brand">
+            <strong>Staff Dashboard</strong>
+            <p class="muted" style="margin:6px 0 0;font-size:13px">Admin tools: manage reviews, gallery, about, and site files.</p>
+          </div>
+          <nav class="admin-nav">
+            <button class="btn small admin-nav-btn" data-panel="reviews">Reviews</button>
+            <button class="btn small admin-nav-btn" data-panel="errors">Website Errors</button>
+            <button class="btn small admin-nav-btn" data-panel="gallery">Gallery</button>
+            <button class="btn small admin-nav-btn" data-panel="about">About Us</button>
+            <button class="btn small admin-nav-btn" data-panel="files">File Editor</button>
+          </nav>
+          <div class="admin-login" style="margin-top:12px">
+            <label for="passcode">Passcode</label>
+            <input id="passcode" type="password" placeholder="Enter staff passcode" style="width:100%;margin-top:6px" />
+            <button id="loginBtn" class="btn primary" style="margin-top:8px;width:100%">Login</button>
+            <p id="loginMsg" class="muted" style="margin-top:8px"></p>
+          </div>
+        </aside>
+
+        <main class="admin-main">
+          <div id="panel-reviews" class="admin-panel" style="display:none">
+            <h3>Reviews</h3>
+            <div id="adminReviews"></div>
+            <div style="margin-top:10px">
+              <button id="addReviewBtn" class="btn outline">Add Review</button>
+              <button id="exportReviewsBtn" class="btn">Export Reviews</button>
+              <label style="display:block;margin-top:10px">(Optional) GitHub PAT to save reviews</label>
+              <input id="pat" type="password" placeholder="Paste PAT to save (repo:contents)" style="width:60%" />
+              <button id="saveRepoBtn" class="btn outline">Save reviews to GitHub</button>
+              <p id="saveMsg" class="muted"></p>
+            </div>
+          </div>
+
+          <div id="panel-errors" class="admin-panel" style="display:none">
+            <h3>Website Errors</h3>
+            <div id="errorsList" class="admin-list">Loading errors…</div>
+            <div style="margin-top:10px"><button id="exportErrorsBtn" class="btn">Export Errors</button></div>
+          </div>
+
+          <div id="panel-gallery" class="admin-panel" style="display:none">
+            <h3>Gallery (Staff only)</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input id="g-url" type="text" placeholder="Image URL" style="width:60%" />
+              <input id="g-caption" type="text" placeholder="Caption" style="width:60%" />
+              <button id="addGalleryBtn" class="btn primary">Add Image</button>
+              <button id="saveGalleryBtn" class="btn outline">Save gallery to repo (requires PAT)</button>
+            </div>
+            <div id="adminGallery" style="margin-top:12px">Loading gallery…</div>
+          </div>
+
+          <div id="panel-about" class="admin-panel" style="display:none">
+            <h3>About Us Editor</h3>
+            <textarea id="aboutEditor" rows="8" style="width:100%;max-width:900px"></textarea>
+            <div style="margin-top:10px">
+              <label for="aboutPat">(Required to save) Staff GitHub PAT</label>
+              <input id="aboutPat" type="password" style="width:60%" />
+              <button id="saveAboutBtn" class="btn primary">Save About Content</button>
+              <p id="aboutSaveResult" class="muted"></p>
+            </div>
+          </div>
+
+          <div id="panel-files" class="admin-panel" style="display:none">
+            <h3>File Editor</h3>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <select id="fileSelect" style="padding:8px;border-radius:8px">
+                <option value="index.html">index.html</option>
+                <option value="styles.css">styles.css</option>
+                <option value="script.js">script.js</option>
+                <option value="admin.js">admin.js</option>
+                <option value="reviews.json">reviews.json</option>
+                <option value="gallery.json">gallery.json</option>
+                <option value="about.json">about.json</option>
+                <option value="errors.json">errors.json</option>
+              </select>
+              <button id="loadFileBtn" class="btn outline">Load</button>
+              <input id="fileCommitMsg" type="text" placeholder="Commit message" style="flex:1;padding:8px;border-radius:8px" />
+            </div>
+            <textarea id="fileEditor" rows="14" style="width:100%;max-width:1000px;font-family:monospace"></textarea>
+            <div style="margin-top:8px">
+              <input id="patFile" type="password" placeholder="Staff PAT to save" style="width:60%" />
+              <button id="saveFileBtn" class="btn primary">Save file to repo</button>
+              <p id="fileSaveResult" class="muted"></p>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </section>
 
   </main>
 
