@@ -194,5 +194,25 @@
 
   <script src="script.js" defer></script>
   <script src="admin.js" defer></script>
+  <script>
+    // Ensure admin section is shown when hash changes or when Staff link is clicked
+    function showAdmin(){
+      const adminSec = document.getElementById('admin');
+      if(!adminSec) return;
+      adminSec.style.display = 'block';
+      // show reviews panel by default
+      const panel = document.getElementById('panel-reviews');
+      if(panel) panel.style.display = 'block';
+      // scroll into view
+      setTimeout(()=>{ document.getElementById('admin').scrollIntoView({behavior:'smooth'}); }, 40);
+    }
+    window.addEventListener('hashchange', ()=>{ if(location.hash.replace('#','') === 'admin') showAdmin(); });
+    document.addEventListener('click', (e)=>{
+      const el = e.target.closest && e.target.closest('#staffLink');
+      if(el){ e.preventDefault(); history.replaceState(null,'', '#admin'); showAdmin(); }
+    });
+    // If page loaded with #admin, show it
+    document.addEventListener('DOMContentLoaded', () => { if(location.hash.replace('#','') === 'admin') showAdmin(); });
+  </script>
 </body>
 </html>
