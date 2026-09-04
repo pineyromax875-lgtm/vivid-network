@@ -1,10 +1,12 @@
-// Load commands (if any), reviews, gallery, and about; capture client-side errors
+// Client site script: load commands, reviews, gallery, about; capture client-side errors
+
 async function loadCommands() {
   try {
     const res = await fetch('commands.json');
     if (!res.ok) return;
     const commands = await res.json();
     const list = document.getElementById('commandsList');
+    if (!list) return;
     list.innerHTML = '';
     commands.forEach(cmd => {
       const el = document.createElement('div');
@@ -13,6 +15,7 @@ async function loadCommands() {
       list.appendChild(el);
     });
   } catch (e) {
+    // don't break page if commands fail
     console.error('Failed to load commands', e);
   }
 }
@@ -32,6 +35,19 @@ async function loadReviews() {
   }
 }
 
+function renderReviews(reviews){
+  const list = document.getElementById('reviewsList');
+  if(!list) return;
+  list.innerHTML = '';
+  if(!Array.isArray(reviews) || reviews.length === 0){ list.innerHTML = '<p class="muted">No reviews yet.</p>'; return; }
+  reviews.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'command';
+    el.innerHTML = `<div><strong>${escapeHtml(r.name)} — ${'★'.repeat(r.rating||5)}</strong><div class="meta">${escapeHtml(r.text||'')}</div></div>`;
+    list.appendChild(el);
+  });
+}
+
 async function loadGallery(){
   const list = document.getElementById('galleryList');
   if(!list) return;
@@ -46,6 +62,7 @@ async function loadGallery(){
 
 function renderGallery(gallery){
   const list = document.getElementById('galleryList');
+  if(!list) return;
   list.innerHTML = '';
   if(!gallery || gallery.length === 0){ list.innerHTML = '<p class="muted">No images yet.</p>'; return; }
   gallery.forEach(item => {
@@ -55,8 +72,9 @@ function renderGallery(gallery){
     img.src = item.url;
     img.alt = item.caption || 'Gallery image';
     img.loading = 'lazy';
-    img.width = 800;
-    img.height = 450;
+    img.style.width = '100%';
+    img.style.height = '160px';
+    img.style.objectFit = 'cover';
     const caption = document.createElement('div');
     caption.className = 'g-caption';
     caption.textContent = item.caption || '';
@@ -79,50 +97,70 @@ async function loadAbout(){
     const res = await fetch('about.json');
     if(!res.ok){ el.innerHTML = '<p class="muted">No about content.</p>'; return; }
     const about = await res.json();
-    el.innerHTML = about.html || about.text || '<p class="muted">No about content.</p>';
+    // If the about content is HTML, we trust only when sanitized by DOMPurify (included in page)
+    if(window.DOMPurify && about && about.html){
+      el.innerHTML = DOMPurify.sanitize(about.html);
+    } else {
+      el.innerHTML = about.html || about.text || '<p class="muted">No about content.</p>';
+    }
   }catch(e){ console.error('Failed to load about', e); el.innerHTML = '<p class="muted">Unable to load about content.</p>'; }
 }
 
 function escapeHtml(str){
+  if (str === undefined || str === null) return '';
   return String(str).replace(/[&<>\"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[s]);
 }
 
 function submitReviewClient(name, rating, text){
   const list = document.getElementById('reviewsList');
+  if(!list) return;
   const review = { name, rating: parseInt(rating,10), text, date: new Date().toISOString().split('T')[0] };
-  // show immediately to submitter
   const el = document.createElement('div');
   el.className = 'command';
   el.innerHTML = `<div><strong>${escapeHtml(review.name)} — ${'★'.repeat(review.rating)}</strong><div class="meta">${escapeHtml(review.text)}</div></div>`;
   list.insertBefore(el, list.firstChild);
-  // store pending review locally so staff can pick it up
-  const pending = JSON.parse(localStorage.getItem('pendingReviews') || '[]');
-  pending.unshift(review);
-  localStorage.setItem('pendingReviews', JSON.stringify(pending));
+  try{
+    const pending = JSON.parse(localStorage.getItem('pendingReviews') || '[]');
+    pending.unshift(review);
+    localStorage.setItem('pendingReviews', JSON.stringify(pending));
+  }catch(e){ console.error('Failed to save pending review', e); }
 }
 
 function buildIssueLink(name, rating, text){
   const title = encodeURIComponent(`Review from ${name} — ${rating}★`);
   const body = encodeURIComponent(`**Name:** ${name}\n**Rating:** ${rating}\n\n${text}`);
-  return `https://github.com/pineyromax875-lgtm/vivid-network/issues/new?title=${title}&body=${body}`;
+  return `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new?title=${title}&body=${body}`;
 }
 
 // Capture JS errors and store locally so staff can review them in the dashboard
 function captureClientError(evtOrMsg, source, lineno, colno, error){
-  let e = {};
-  if (typeof evtOrMsg === 'string'){
-    e = { message: evtOrMsg, source, lineno, colno, stack: error && error.stack ? error.stack : null, date: new Date().toISOString() };
-  } else if (evtOrMsg && evtOrMsg.message){
-    const ev = evtOrMsg;
-    e = { message: ev.message, source: ev.filename || source || location.href, lineno: ev.lineno || lineno, colno: ev.colno || colno, stack: ev.error && ev.error.stack ? ev.error.stack : (ev.stack || null), date: new Date().toISOString() };
-  }
-  const stored = JSON.parse(localStorage.getItem('pendingErrors') || '[]');
-  stored.unshift(e);
-  localStorage.setItem('pendingErrors', JSON.stringify(stored));
+  try{
+    let e = { date: new Date().toISOString() };
+    if (typeof evtOrMsg === 'string'){
+      e.message = evtOrMsg; e.source = source; e.lineno = lineno; e.colno = colno; e.stack = error && error.stack ? error.stack : null;
+    } else if (evtOrMsg && evtOrMsg.message){
+      // window.onerror or similar object
+      const ev = evtOrMsg;
+      e.message = ev.message || 'Error';
+      e.source = ev.filename || source || location.href;
+      e.lineno = ev.lineno || lineno || 0;
+      e.colno = ev.colno || colno || 0;
+      e.stack = (ev.error && ev.error.stack) ? ev.error.stack : (ev.stack || ev.stacktrace || null);
+    } else if (evtOrMsg && evtOrMsg.reason){
+      // unhandledrejection
+      e.message = 'Unhandled Promise Rejection: ' + (evtOrMsg.reason && evtOrMsg.reason.message ? evtOrMsg.reason.message : String(evtOrMsg.reason));
+      e.stack = (evtOrMsg.reason && evtOrMsg.reason.stack) ? evtOrMsg.reason.stack : null;
+    } else {
+      e.message = 'Unknown error';
+    }
+    const stored = JSON.parse(localStorage.getItem('pendingErrors') || '[]');
+    stored.unshift(e);
+    localStorage.setItem('pendingErrors', JSON.stringify(stored));
+  }catch(ex){ console.error('captureClientError failed', ex); }
 }
 
-window.addEventListener('error', function(ev){ captureClientError(ev); });
-window.addEventListener('unhandledrejection', function(ev){ captureClientError({ message: 'Unhandled Promise Rejection: ' + (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason)), filename: ev.filename || location.href, lineno: ev.lineno, colno: ev.colno, stack: ev.reason && ev.reason.stack ? ev.reason.stack : null }); });
+window.addEventListener('error', function(ev){ try{ captureClientError(ev); }catch(e){ console.error(e); } });
+window.addEventListener('unhandledrejection', function(ev){ try{ captureClientError(ev); }catch(e){ console.error(e); } });
 
 // Theme handling
 function getSavedTheme(){ return localStorage.getItem('theme') || 'dark'; }
@@ -137,46 +175,41 @@ function applyTheme(theme){
   }
   localStorage.setItem('theme', theme);
 }
+function toggleTheme(){ const current = getSavedTheme(); applyTheme(current === 'dark' ? 'light' : 'dark'); }
 
-function toggleTheme(){
-  const current = getSavedTheme();
-  applyTheme(current === 'dark' ? 'light' : 'dark');
-}
-
-
+// Init
 document.addEventListener('DOMContentLoaded', () => {
-  loadCommands();
-  loadReviews();
-  loadGallery();
-  loadAbout();
-  const year = document.getElementById('year');
-  if (year) year.textContent = new Date().getFullYear();
+  try{
+    loadCommands();
+    loadReviews();
+    loadGallery();
+    loadAbout();
+    const year = document.getElementById('year'); if (year) year.textContent = new Date().getFullYear();
 
-  // theme toggle init
-  applyTheme(getSavedTheme());
-  const themeBtn = document.getElementById('themeToggle');
-  if(themeBtn) themeBtn.addEventListener('click', toggleTheme);
+    applyTheme(getSavedTheme());
+    const themeBtn = document.getElementById('themeToggle'); if(themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
-  // review form
-  const submitBtn = document.getElementById('submitReviewBtn');
-  if (submitBtn){
-    submitBtn.addEventListener('click', () => {
-      const name = document.getElementById('r-name').value.trim();
-      const rating = document.getElementById('r-rating').value;
-      const text = document.getElementById('r-text').value.trim();
-      if(!name || !text){ alert('Please provide name and review text.'); return; }
-      submitReviewClient(name, rating, text);
-      // prepare issue link
-      const issueLink = buildIssueLink(name, rating, text);
-      const issueAnchor = document.getElementById('issueLink');
-      if (issueAnchor){ issueAnchor.href = issueLink; issueAnchor.textContent = 'Create GitHub Issue'; }
-      document.getElementById('r-name').value=''; document.getElementById('r-text').value='';
-      alert('Thanks! Your review is saved locally for staff review. If you want it published now, click the Create GitHub Issue link.');
-    });
-  }
+    const submitBtn = document.getElementById('submitReviewBtn');
+    if (submitBtn){
+      submitBtn.addEventListener('click', () => {
+        const nameEl = document.getElementById('r-name');
+        const textEl = document.getElementById('r-text');
+        const ratingEl = document.getElementById('r-rating');
+        const name = nameEl ? nameEl.value.trim() : '';
+        const rating = ratingEl ? ratingEl.value : '5';
+        const text = textEl ? textEl.value.trim() : '';
+        if(!name || !text){ alert('Please provide name and review text.'); return; }
+        submitReviewClient(name, rating, text);
+        const issueLink = buildIssueLink(name, rating, text);
+        const issueAnchor = document.getElementById('issueLink');
+        if (issueAnchor){ issueAnchor.href = issueLink; issueAnchor.textContent = 'Create GitHub Issue'; }
+        if(nameEl) nameEl.value=''; if(textEl) textEl.value='';
+        alert('Thanks! Your review is saved locally for staff review. If you want it published now, click the Create GitHub Issue link.');
+      });
+    }
 
-  // simple menu toggle for mobile
-  const toggle = document.getElementById('menuToggle');
-  const nav = document.getElementById('nav');
-  if (toggle && nav) toggle.addEventListener('click', () => nav.classList.toggle('open'));
+    const toggle = document.getElementById('menuToggle');
+    const nav = document.getElementById('nav');
+    if (toggle && nav) toggle.addEventListener('click', () => nav.classList.toggle('open'));
+  }catch(e){ console.error('Init failed', e); }
 });
