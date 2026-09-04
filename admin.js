@@ -6,7 +6,7 @@ const FILE_PATH = 'reviews.json';
 
 let reviews = [];
 let isAuthed = false;
-const DEMO_PASSCODE = 'staffpass'; // CHANGE THIS in the file after deploy for slightly better safety
+const DEMO_PASSCODE = 'VividStaff'; // demo passcode for staff (change to a secure auth in production)
 
 async function fetchReviews(){
   try{
