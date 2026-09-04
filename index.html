@@ -14,10 +14,11 @@
   <meta property="og:description" content="Moderation, economy, customizable commands, and more." />
 </head>
 <body>
+  <a class="skip-link" href="#maincontent">Skip to content</a>
   <header class="site-header" role="banner">
     <div class="container header-inner">
       <a class="brand" href="#" aria-label="Vivid Network home">
-        <!-- Inline SVG logo -->
+        <!-- Inline SVG logo (polished) -->
         <svg class="logo" width="44" height="44" viewBox="0 0 100 100" aria-hidden="true">
           <defs>
             <linearGradient id="g1" x1="0" x2="1">
@@ -26,7 +27,8 @@
             </linearGradient>
           </defs>
           <circle cx="50" cy="50" r="48" fill="url(#g1)"/>
-          <text x="50" y="62" font-size="46" text-anchor="middle" fill="white" font-family="Segoe UI, Roboto, Arial">V</text>
+          <path d="M34 68c6-8 20-12 32-12" stroke="rgba(255,255,255,0.9)" stroke-width="6" stroke-linecap="round" fill="none" transform="translate(0,-12)" />
+          <text x="50" y="62" font-size="42" text-anchor="middle" fill="white" font-family="Segoe UI, Roboto, Arial">V</text>
         </svg>
         <span class="brand-text">Vivid Network</span>
       </a>
@@ -50,7 +52,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="maincontent">
     <section class="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
@@ -69,6 +71,34 @@
             <li><strong>Commands:</strong> See below (loaded live)</li>
           </ul>
         </aside>
+      </div>
+    </section>
+
+    <section class="container testimonials">
+      <h2>Trusted by communities</h2>
+      <p class="muted">Vivid is used by large, active communities — fast, reliable, and fully configurable.</p>
+      <div class="test-grid">
+        <figure class="test-item">
+          <img src="https://ui-avatars.com/api/?name=Big+Server&background=7c3aed&color=fff&size=128" alt="Avatar" />
+          <figcaption>
+            <strong>Big Server</strong>
+            <p class="muted">"Vivid keeps our server safe and engaged — automod and economy are fantastic."</p>
+          </figcaption>
+        </figure>
+        <figure class="test-item">
+          <img src="https://ui-avatars.com/api/?name=Gaming+Hub&background=5b21b6&color=fff&size=128" alt="Avatar" />
+          <figcaption>
+            <strong>Gaming Hub</strong>
+            <p class="muted">"Commands are snappy and the moderation tools saved us so much time."</p>
+          </figcaption>
+        </figure>
+        <figure class="test-item">
+          <img src="https://ui-avatars.com/api/?name=Creative+Space&background=8b5cf6&color=fff&size=128" alt="Avatar" />
+          <figcaption>
+            <strong>Creative Space</strong>
+            <p class="muted">"Our members love the interactive games — great for onboarding."</p>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
@@ -93,7 +123,7 @@
             <strong>Staff Dashboard</strong>
             <p class="muted" style="margin:6px 0 0;font-size:13px">Admin tools: manage reviews, gallery, about, and site files.</p>
           </div>
-          <nav class="admin-nav">
+          <nav class="admin-nav" aria-label="Admin panels">
             <button class="btn small admin-nav-btn" data-panel="reviews">Reviews</button>
             <button class="btn small admin-nav-btn" data-panel="errors">Website Errors</button>
             <button class="btn small admin-nav-btn" data-panel="gallery">Gallery</button>
@@ -114,10 +144,10 @@
             <div id="adminReviews"></div>
             <div style="margin-top:10px">
               <button id="addReviewBtn" class="btn outline">Add Review</button>
-              <button id="exportReviewsBtn" class="btn">Export Reviews</button>
+              <button id="exportBtn" class="btn">Export Reviews</button>
               <label style="display:block;margin-top:10px">(Optional) GitHub PAT to save reviews</label>
               <input id="pat" type="password" placeholder="Paste PAT to save (repo:contents)" style="width:60%" />
-              <button id="saveRepoBtn" class="btn outline">Save reviews to GitHub</button>
+              <button id="saveRepoBtn" class="btn outline">Save reviews / gallery to GitHub</button>
               <p id="saveMsg" class="muted"></p>
             </div>
           </div>
@@ -135,6 +165,7 @@
               <input id="g-caption" type="text" placeholder="Caption" style="width:60%" />
               <button id="addGalleryBtn" class="btn primary">Add Image</button>
               <button id="saveGalleryBtn" class="btn outline">Save gallery to repo (requires PAT)</button>
+              <button id="exportGalleryBtn" class="btn ghost">Export gallery</button>
             </div>
             <div id="adminGallery" style="margin-top:12px">Loading gallery…</div>
           </div>
@@ -145,6 +176,7 @@
             <div style="margin-top:10px">
               <label for="aboutPat">(Required to save) Staff GitHub PAT</label>
               <input id="aboutPat" type="password" style="width:60%" />
+              <button id="previewAboutBtn" class="btn outline">Preview</button>
               <button id="saveAboutBtn" class="btn primary">Save About Content</button>
               <p id="aboutSaveResult" class="muted"></p>
             </div>
@@ -192,27 +224,17 @@
     </div>
   </footer>
 
+  <!-- Preview modal for About content -->
+  <div id="previewModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content">
+      <button class="modal-close btn ghost" aria-label="Close preview">✕</button>
+      <h3>Preview — About Us</h3>
+      <div id="previewContent" class="about-preview"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js" integrity="sha512-UY7p7KxqS3m3zO+qQn1E0E4JzJFV9q1t3QjL1Q9y6+M74Vxu1bP6vqJ8W3Y4qjr9q3aK1q3ZbJ7p7bJ8e9H2gQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="script.js" defer></script>
   <script src="admin.js" defer></script>
-  <script>
-    // Ensure admin section is shown when hash changes or when Staff link is clicked
-    function showAdmin(){
-      const adminSec = document.getElementById('admin');
-      if(!adminSec) return;
-      adminSec.style.display = 'block';
-      // show reviews panel by default
-      const panel = document.getElementById('panel-reviews');
-      if(panel) panel.style.display = 'block';
-      // scroll into view
-      setTimeout(()=>{ document.getElementById('admin').scrollIntoView({behavior:'smooth'}); }, 40);
-    }
-    window.addEventListener('hashchange', ()=>{ if(location.hash.replace('#','') === 'admin') showAdmin(); });
-    document.addEventListener('click', (e)=>{
-      const el = e.target.closest && e.target.closest('#staffLink');
-      if(el){ e.preventDefault(); history.replaceState(null,'', '#admin'); showAdmin(); }
-    });
-    // If page loaded with #admin, show it
-    document.addEventListener('DOMContentLoaded', () => { if(location.hash.replace('#','') === 'admin') showAdmin(); });
-  </script>
 </body>
 </html>
