@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Vivid Network — Staff Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <img src="images/logo.svg" alt="Vivid Network logo" class="brand-logo" />
+        <span class="brand-text">Vivid Network</span>
+      </a>
+
+      <nav class="nav" id="nav">
+        <a href="/">Home</a>
+        <a href="/index.html#features">Features</a>
+        <a href="/index.html#reviews">Reviews</a>
+        <a href="/index.html#support">Support</a>
+      </nav>
+
+      <div class="actions">
+        <a class="btn primary" href="/index.html" target="_self">Back to site</a>
+        <button class="btn ghost" id="menuToggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>Staff Dashboard</h1>
+
+    <section id="loginSection">
+      <p>This dashboard is a lightweight admin interface. For security, replace the demo passcode with a proper authentication system (OAuth, server-side sessions).</p>
+      <label for="passcode">Staff passcode</label>
+      <input id="passcode" type="password" placeholder="Enter staff passcode" />
+      <button id="loginBtn" class="btn primary">Login</button>
+      <p id="loginMsg" class="muted"></p>
+    </section>
+
+    <section id="dashboard" style="display:none;">
+      <h2>Reviews</h2>
+      <div id="adminReviews"></div>
+      <button id="addReviewBtn" class="btn outline">Add Review</button>
+
+      <h2>Site Content</h2>
+      <p>You can export current reviews as JSON or (optionally) push changes back to this repository using a personal access token (PAT). Be careful with tokens — treat them like passwords.</p>
+      <button id="exportBtn" class="btn">Export JSON</button>
+      <div style="margin-top:12px">
+        <label for="pat">(Optional) GitHub Personal Access Token</label>
+        <input id="pat" type="password" placeholder="Paste PAT to save directly (repo:contents scope)" style="width:60%" />
+        <button id="saveRepoBtn" class="btn outline">Save to GitHub</button>
+      </div>
+      <p id="saveMsg" class="muted"></p>
+    </section>
+
+    <template id="reviewTemplate">
+      <div class="command admin-review">
+        <div>
+          <strong class="r-name"></strong>
+          <div class="meta r-text"></div>
+          <div class="meta r-date"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost editBtn">Edit</button>
+          <button class="btn ghost deleteBtn">Delete</button>
+        </div>
+      </div>
+    </template>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="muted">This demo dashboard uses client-side storage by default. For production, implement proper authentication and a server-side API.</p>
+    </div>
+  </footer>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>
