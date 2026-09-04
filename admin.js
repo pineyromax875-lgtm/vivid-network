@@ -1,16 +1,27 @@
-// Lightweight admin dashboard script
+// Lightweight admin dashboard script with errors and file editor
 
 const REPO_OWNER = 'pineyromax875-lgtm';
 const REPO_NAME = 'vivid-network';
-const FILE_PATH = 'reviews.json';
 
 let reviews = [];
+let errors = [];
 let isAuthed = false;
-const DEMO_PASSCODE = 'VividStaff'; // demo passcode for staff (change to a secure auth in production)
+const DEMO_PASSCODE = 'VividStaff'; // demo passcode for staff (change to secure auth in production)
 
 async function fetchReviews(){
   try{
-    const res = await fetch('/' + FILE_PATH);
+    const res = await fetch('/reviews.json');
+    if(!res.ok) return [];
+    return await res.json();
+  }catch(e){
+    console.error(e);
+    return [];
+  }
+}
+
+async function fetchErrors(){
+  try{
+    const res = await fetch('/errors.json');
     if(!res.ok) return [];
     return await res.json();
   }catch(e){
@@ -32,6 +43,34 @@ function renderAdminReviews(){
     node.querySelector('.deleteBtn').addEventListener('click', () => deleteReview(idx));
     container.appendChild(node);
   });
+}
+
+function renderErrors(){
+  const container = document.getElementById('errorsList');
+  container.innerHTML = '';
+  if(!errors || errors.length === 0){ container.innerHTML = '<p class="muted">No errors reported.</p>'; return; }
+  errors.forEach((e, idx) => {
+    const tpl = document.getElementById('errorTemplate');
+    const node = tpl.content.cloneNode(true);
+    node.querySelector('.e-title').textContent = `${e.title || e.message || 'Error'} ${e.resolved ? '(resolved)' : ''}`;
+    node.querySelector('.e-stack').textContent = e.stack || e.message || '';
+    node.querySelector('.e-date').textContent = e.date || '';
+    node.querySelector('.markResolvedBtn').addEventListener('click', ()=> markResolved(idx));
+    node.querySelector('.deleteErrorBtn').addEventListener('click', ()=> deleteError(idx));
+    container.appendChild(node);
+  });
+}
+
+function markResolved(i){
+  if(!confirm('Mark this error as resolved?')) return;
+  errors[i].resolved = true;
+  renderErrors();
+}
+
+function deleteError(i){
+  if(!confirm('Delete this error?')) return;
+  errors.splice(i,1);
+  renderErrors();
 }
 
 function editReview(i){
@@ -59,44 +98,51 @@ function addReview(){
   renderAdminReviews();
 }
 
-function exportJSON(){
-  const dataStr = JSON.stringify(reviews, null, 2);
+function exportJSON(data, filename){
+  const dataStr = JSON.stringify(data, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'reviews.json';
+  a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
 }
 
-async function saveToGitHub(token){
-  const saveMsg = document.getElementById('saveMsg');
-  saveMsg.textContent = 'Saving to GitHub...';
+async function getFileSha(token, path){
+  const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, { headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github+json' } });
+  if(!res.ok) return null;
+  const j = await res.json();
+  return j.sha;
+}
+
+async function saveFileToGitHub(token, path, content, message){
+  const resultEl = document.getElementById('fileSaveResult');
+  if(resultEl) resultEl.textContent = 'Saving...';
   try{
-    // get current file sha
-    const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}` , {
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' }
-    });
-    let sha = null;
-    if(getRes.ok){
-      const j = await getRes.json();
-      sha = j.sha;
-    }
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(reviews, null, 2))));
-    const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+    const sha = await getFileSha(token, path);
+    const encoded = btoa(unescape(encodeURIComponent(content)));
+    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
       method: 'PUT',
-      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json' },
-      body: JSON.stringify({ message: 'Update reviews via admin dashboard', content, sha })
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github+json' },
+      body: JSON.stringify({ message: message || 'Update via admin dashboard', content: encoded, sha })
     });
-    if(!putRes.ok){
-      const err = await putRes.json();
-      saveMsg.textContent = 'Failed to save: ' + (err.message || putRes.statusText);
-      return;
-    }
-    saveMsg.textContent = 'Saved to repository!';
-  }catch(e){
-    console.error(e); saveMsg.textContent = 'Error saving to GitHub: ' + e.message;
-  }
+    if(!res.ok){ const e = await res.json(); if(resultEl) resultEl.textContent = 'Failed: ' + (e.message || res.statusText); return false; }
+    if(resultEl) resultEl.textContent = 'Saved to repository.';
+    return true;
+  }catch(e){ console.error(e); if(resultEl) resultEl.textContent = 'Error saving: ' + e.message; return false; }
+}
+
+async function loadEditableFile(path){
+  const editor = document.getElementById('fileEditor');
+  const resultEl = document.getElementById('fileSaveResult');
+  if(resultEl) resultEl.textContent = 'Loading...';
+  try{
+    const res = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${path}`);
+    if(!res.ok){ editor.value = ''; if(resultEl) resultEl.textContent = 'Failed to load file.'; return; }
+    const text = await res.text();
+    editor.value = text;
+    if(resultEl) resultEl.textContent = 'Loaded.';
+  }catch(e){ console.error(e); if(resultEl) resultEl.textContent = 'Error loading file: ' + e.message; }
 }
 
 // Login & init
@@ -109,23 +155,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   const exportBtn = document.getElementById('exportBtn');
   const saveBtn = document.getElementById('saveRepoBtn');
   const patInput = document.getElementById('pat');
+  const exportErrorsBtn = document.getElementById('exportErrorsBtn');
+  const loadFileBtn = document.getElementById('loadFileBtn');
+  const saveFileBtn = document.getElementById('saveFileBtn');
+  const fileSelect = document.getElementById('fileSelect');
+  const patFile = document.getElementById('patFile');
 
   reviews = await fetchReviews();
+  errors = await fetchErrors();
 
   loginBtn.addEventListener('click', () => {
-    const val = passIn.value;
+    const val = (passIn.value || '').trim();
     if(val === DEMO_PASSCODE){
       isAuthed = true; loginMsg.textContent = 'Logged in (demo)'; loginSection.style.display = 'none'; dash.style.display = 'block';
-      renderAdminReviews();
+      renderAdminReviews(); renderErrors();
     } else { loginMsg.textContent = 'Invalid passcode'; }
   });
 
   document.getElementById('addReviewBtn').addEventListener('click', addReview);
-  exportBtn.addEventListener('click', exportJSON);
-  saveBtn.addEventListener('click', () => {
+  exportBtn.addEventListener('click', () => exportJSON(reviews, 'reviews.json'));
+  exportErrorsBtn.addEventListener('click', () => exportJSON(errors, 'errors.json'));
+
+  saveBtn.addEventListener('click', async () => {
     const token = patInput.value.trim();
-    if(!token){ if(!confirm('No token provided — you will only download the JSON. Continue?')) return; exportJSON(); return; }
+    if(!token){ if(!confirm('No token provided — you will only download the JSON. Continue?')) return; exportJSON(reviews, 'reviews.json'); return; }
     if(!confirm('This will push changes to the GitHub repository using the provided token. Make sure the token has repo:contents scope. Continue?')) return;
-    saveToGitHub(token);
+    // save reviews.json
+    const success = await saveFileToGitHub(token, 'reviews.json', JSON.stringify(reviews, null, 2), 'Update reviews via admin dashboard');
+    if(success) document.getElementById('saveMsg').textContent = 'Saved reviews.json to repo.';
   });
+
+  loadFileBtn.addEventListener('click', async () => {
+    const path = fileSelect.value;
+    await loadEditableFile(path);
+  });
+
+  saveFileBtn.addEventListener('click', async () => {
+    const token = (patFile.value || '').trim();
+    if(!token){ alert('A staff GitHub token is required to save files to the repo.'); return; }
+    const path = fileSelect.value;
+    const content = document.getElementById('fileEditor').value;
+    const message = document.getElementById('fileCommitMsg').value || `Update ${path} via admin dashboard`;
+    if(!confirm(`Save ${path} to repository? This will create a commit.`)) return;
+    await saveFileToGitHub(token, path, content, message);
+  });
+
 });

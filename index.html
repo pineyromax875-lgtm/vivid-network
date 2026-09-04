@@ -104,6 +104,25 @@
       <h2>Reviews</h2>
       <p>What server owners and staff say about Vivid Network.</p>
       <div id="reviewsList" class="commands-list">Loading reviews…</div>
+
+      <div id="reviewForm" class="review-form" style="margin-top:16px;">
+        <h3>Write a review</h3>
+        <label for="r-name">Your name</label><br />
+        <input id="r-name" type="text" placeholder="Your name" style="width:100%;max-width:420px" /><br />
+        <label for="r-rating">Rating</label><br />
+        <select id="r-rating">
+          <option value="5">5 — Excellent</option>
+          <option value="4">4 — Very good</option>
+          <option value="3">3 — Good</option>
+          <option value="2">2 — Fair</option>
+          <option value="1">1 — Poor</option>
+        </select><br />
+        <label for="r-text">Review</label><br />
+        <textarea id="r-text" rows="4" style="width:100%;max-width:600px"></textarea><br />
+        <button id="submitReviewBtn" class="btn primary">Submit review</button>
+        <p class="muted">Reviews submitted here will appear immediately for you. Staff can publish them to the site canonical reviews.json using the Staff Dashboard.</p>
+        <p class="muted">If you'd like your review published immediately for everyone, click <a id="issueLink" href="#" target="_blank">Create GitHub Issue</a> to prefill a public issue our team can convert to a review.</p>
+      </div>
     </section>
 
     <section id="docs" class="container docs">
@@ -142,13 +161,44 @@
         <div id="adminReviews"></div>
         <button id="addReviewBtn" class="btn outline">Add Review</button>
 
+        <h3>Website Errors</h3>
+        <p>Errors reported by users or collected by the site. You can mark as resolved or delete entries.</p>
+        <div id="errorsList" style="margin-bottom:12px">Loading errors…</div>
+        <button id="exportErrorsBtn" class="btn">Export Errors</button>
+
+        <h3>Site File Editor</h3>
+        <p>Load an editable file, make changes, and save it back to the repository using a staff GitHub token (PAT) with repo:contents scope.</p>
+        <label for="fileSelect">File</label>
+        <select id="fileSelect">
+          <option value="index.html">index.html</option>
+          <option value="styles.css">styles.css</option>
+          <option value="script.js">script.js</option>
+          <option value="admin.js">admin.js</option>
+          <option value="reviews.json">reviews.json</option>
+          <option value="errors.json">errors.json</option>
+        </select>
+        <button id="loadFileBtn" class="btn outline">Load file</button>
+        <div style="margin-top:8px">
+          <textarea id="fileEditor" rows="14" style="width:100%;max-width:900px;font-family:monospace"></textarea>
+        </div>
+        <div style="margin-top:8px">
+          <label for="fileSaveMsg">Commit message</label>
+          <input id="fileCommitMsg" type="text" placeholder="Commit message" style="width:60%" />
+        </div>
+        <div style="margin-top:8px">
+          <label for="patFile">Staff GitHub Personal Access Token (optional for saving)</label>
+          <input id="patFile" type="password" placeholder="Paste PAT to save changes (repo:contents)" style="width:60%" />
+          <button id="saveFileBtn" class="btn primary">Save file to repo</button>
+          <p id="fileSaveResult" class="muted"></p>
+        </div>
+
         <h3>Site Content</h3>
-        <p>You can export current reviews as JSON or (optionally) push changes back to this repository using a personal access token (PAT). Be careful with tokens — treat them like passwords.</p>
-        <button id="exportBtn" class="btn">Export JSON</button>
+        <p>You can export current reviews or (optionally) push changes back to this repository using a personal access token (PAT). Be careful with tokens — treat them like passwords.</p>
+        <button id="exportBtn" class="btn">Export Reviews JSON</button>
         <div style="margin-top:12px">
           <label for="pat">(Optional) GitHub Personal Access Token</label>
           <input id="pat" type="password" placeholder="Paste PAT to save directly (repo:contents scope)" style="width:60%" />
-          <button id="saveRepoBtn" class="btn outline">Save to GitHub</button>
+          <button id="saveRepoBtn" class="btn outline">Save reviews to GitHub</button>
         </div>
         <p id="saveMsg" class="muted"></p>
       </section>
@@ -163,6 +213,20 @@
           <div style="display:flex;gap:8px">
             <button class="btn ghost editBtn">Edit</button>
             <button class="btn ghost deleteBtn">Delete</button>
+          </div>
+        </div>
+      </template>
+
+      <template id="errorTemplate">
+        <div class="command admin-review">
+          <div>
+            <strong class="e-title"></strong>
+            <div class="meta e-stack"></div>
+            <div class="meta e-date"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost markResolvedBtn">Mark resolved</button>
+            <button class="btn ghost deleteErrorBtn">Delete</button>
           </div>
         </div>
       </template>
