@@ -180,6 +180,9 @@ function toggleTheme(){ const current = getSavedTheme(); applyTheme(current === 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
   try{
+    // Force default to dark on load to avoid white-screen from stray theme values
+    try{ localStorage.setItem('theme','dark'); }catch(e){}
+
     loadCommands();
     loadReviews();
     loadGallery();
