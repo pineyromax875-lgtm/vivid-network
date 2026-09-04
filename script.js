@@ -1,4 +1,4 @@
-// Load commands (if any), reviews, and capture client-side errors
+// Load commands (if any), reviews, gallery, and about; capture client-side errors
 async function loadCommands() {
   try {
     const res = await fetch('commands.json');
@@ -32,19 +32,40 @@ async function loadReviews() {
   }
 }
 
-function renderReviews(reviews) {
-  const list = document.getElementById('reviewsList');
+async function loadGallery(){
+  const list = document.getElementById('galleryList');
+  if(!list) return;
+  list.innerHTML = 'Loading gallery…';
+  try{
+    const res = await fetch('gallery.json');
+    if(!res.ok){ list.innerHTML = '<p class="muted">No gallery items.</p>'; return; }
+    const gallery = await res.json();
+    renderGallery(gallery);
+  }catch(e){ console.error('Failed to load gallery', e); list.innerHTML = '<p class="muted">Unable to load gallery.</p>'; }
+}
+
+function renderGallery(gallery){
+  const list = document.getElementById('galleryList');
   list.innerHTML = '';
-  if (!reviews || reviews.length === 0) {
-    list.innerHTML = '<p class="muted">No reviews yet — be the first to add one.</p>';
-    return;
-  }
-  reviews.forEach(r => {
+  if(!gallery || gallery.length === 0){ list.innerHTML = '<p class="muted">No images yet.</p>'; return; }
+  gallery.forEach(item => {
     const el = document.createElement('div');
-    el.className = 'command';
-    el.innerHTML = `<div><strong>${escapeHtml(r.name)} — ${'★'.repeat(r.rating)}</strong><div class="meta">${escapeHtml(r.text)}</div></div>`;
+    el.className = 'gallery-item';
+    el.innerHTML = `<img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.caption||'')}" style="max-width:320px;border-radius:8px;display:block;margin-bottom:8px" /><div style="font-weight:600">${escapeHtml(item.caption||'')}</div><div class="muted" style="font-size:0.9em">${escapeHtml(item.date||'')}</div>`;
     list.appendChild(el);
   });
+}
+
+async function loadAbout(){
+  const el = document.getElementById('aboutContent');
+  if(!el) return;
+  el.innerHTML = 'Loading about content…';
+  try{
+    const res = await fetch('about.json');
+    if(!res.ok){ el.innerHTML = '<p class="muted">No about content.</p>'; return; }
+    const about = await res.json();
+    el.innerHTML = about.html || about.text || '<p class="muted">No about content.</p>';
+  }catch(e){ console.error('Failed to load about', e); el.innerHTML = '<p class="muted">Unable to load about content.</p>'; }
 }
 
 function escapeHtml(str){
@@ -92,6 +113,8 @@ window.addEventListener('unhandledrejection', function(ev){ captureClientError({
 document.addEventListener('DOMContentLoaded', () => {
   loadCommands();
   loadReviews();
+  loadGallery();
+  loadAbout();
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 

@@ -27,6 +27,8 @@
         <a href="#commands">Commands</a>
         <a href="#docs">Docs</a>
         <a href="#reviews">Reviews</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#about">About</a>
         <a href="#support">Support</a>
         <a href="#admin">Staff</a>
       </nav>
@@ -125,6 +127,17 @@
       </div>
     </section>
 
+    <section id="gallery" class="container gallery">
+      <h2>Gallery</h2>
+      <p>Images posted by site staff. Only staff can add new images — community members can view and enjoy them.</p>
+      <div id="galleryList" class="gallery-list">Loading gallery…</div>
+    </section>
+
+    <section id="about" class="container about">
+      <h2>About Us</h2>
+      <div id="aboutContent">Loading about content…</div>
+    </section>
+
     <section id="docs" class="container docs">
       <h2>Documentation</h2>
       <p>Basic setup:
@@ -166,6 +179,25 @@
         <div id="errorsList" style="margin-bottom:12px">Loading errors…</div>
         <button id="exportErrorsBtn" class="btn">Export Errors</button>
 
+        <h3>Gallery (Staff only)</h3>
+        <p>Add images to the public Gallery. Only staff can add images here.</p>
+        <label for="g-url">Image URL</label>
+        <input id="g-url" type="text" placeholder="https://example.com/image.jpg" style="width:60%" />
+        <label for="g-caption">Caption</label>
+        <input id="g-caption" type="text" placeholder="Short caption" style="width:60%" />
+        <button id="addGalleryBtn" class="btn primary">Add Image to Gallery</button>
+        <div id="adminGallery" style="margin-top:8px">Loading gallery…</div>
+
+        <h3>About Us Editor</h3>
+        <p>Edit the About Us content that appears on the public site.</p>
+        <textarea id="aboutEditor" rows="8" style="width:100%;max-width:900px;font-family:inherit"></textarea>
+        <div style="margin-top:8px">
+          <label for="aboutPat">Staff GitHub Personal Access Token (required to save)</label>
+          <input id="aboutPat" type="password" placeholder="Paste PAT to save changes (repo:contents scope)" style="width:60%" />
+          <button id="saveAboutBtn" class="btn primary">Save About Content</button>
+          <p id="aboutSaveResult" class="muted"></p>
+        </div>
+
         <h3>Site File Editor</h3>
         <p>Load an editable file, make changes, and save it back to the repository using a staff GitHub token (PAT) with repo:contents scope.</p>
         <label for="fileSelect">File</label>
@@ -175,6 +207,8 @@
           <option value="script.js">script.js</option>
           <option value="admin.js">admin.js</option>
           <option value="reviews.json">reviews.json</option>
+          <option value="gallery.json">gallery.json</option>
+          <option value="about.json">about.json</option>
           <option value="errors.json">errors.json</option>
         </select>
         <button id="loadFileBtn" class="btn outline">Load file</button>
@@ -187,7 +221,7 @@
         </div>
         <div style="margin-top:8px">
           <label for="patFile">Staff GitHub Personal Access Token (optional for saving)</label>
-          <input id="patFile" type="password" placeholder="Paste PAT to save changes (repo:contents)" style="width:60%" />
+          <input id="patFile" type="password" placeholder="Paste PAT to save changes (repo:contents scope)" style="width:60%" />
           <button id="saveFileBtn" class="btn primary">Save file to repo</button>
           <p id="fileSaveResult" class="muted"></p>
         </div>
@@ -230,6 +264,20 @@
           </div>
         </div>
       </template>
+
+      <template id="galleryItemTemplate">
+        <div class="gallery-item" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px">
+          <img class="g-thumb" src="" alt="gallery image" style="width:120px;height:auto;object-fit:cover;border-radius:6px" />
+          <div>
+            <div class="g-caption" style="font-weight:600"></div>
+            <div class="g-date muted" style="font-size:0.9em"></div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="btn ghost g-delete-btn">Delete</button>
+          </div>
+        </div>
+      </template>
+
     </section>
 
   </main>
