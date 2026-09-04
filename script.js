@@ -51,7 +51,22 @@ function renderGallery(gallery){
   gallery.forEach(item => {
     const el = document.createElement('div');
     el.className = 'gallery-item';
-    el.innerHTML = `<img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.caption||'')}" style="max-width:320px;border-radius:8px;display:block;margin-bottom:8px" /><div style="font-weight:600">${escapeHtml(item.caption||'')}</div><div class="muted" style="font-size:0.9em">${escapeHtml(item.date||'')}</div>`;
+    const img = document.createElement('img');
+    img.src = item.url;
+    img.alt = item.caption || 'Gallery image';
+    img.loading = 'lazy';
+    img.width = 800;
+    img.height = 450;
+    const caption = document.createElement('div');
+    caption.className = 'g-caption';
+    caption.textContent = item.caption || '';
+    const date = document.createElement('div');
+    date.className = 'muted';
+    date.style.fontSize = '0.9em';
+    date.textContent = item.date || '';
+    el.appendChild(img);
+    el.appendChild(caption);
+    el.appendChild(date);
     list.appendChild(el);
   });
 }
@@ -109,6 +124,25 @@ function captureClientError(evtOrMsg, source, lineno, colno, error){
 window.addEventListener('error', function(ev){ captureClientError(ev); });
 window.addEventListener('unhandledrejection', function(ev){ captureClientError({ message: 'Unhandled Promise Rejection: ' + (ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason)), filename: ev.filename || location.href, lineno: ev.lineno, colno: ev.colno, stack: ev.reason && ev.reason.stack ? ev.reason.stack : null }); });
 
+// Theme handling
+function getSavedTheme(){ return localStorage.getItem('theme') || 'dark'; }
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  if(theme === 'light'){
+    document.body.style.background = 'linear-gradient(180deg,#ffffff 0%, #f5f7fb 60%)';
+    document.body.style.color = '#0b1220';
+  } else {
+    document.body.style.background = 'linear-gradient(180deg,#020617 0%, var(--bg-dark) 60%)';
+    document.body.style.color = '#e7f0fb';
+  }
+  localStorage.setItem('theme', theme);
+}
+
+function toggleTheme(){
+  const current = getSavedTheme();
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
   loadCommands();
@@ -117,6 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAbout();
   const year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
+
+  // theme toggle init
+  applyTheme(getSavedTheme());
+  const themeBtn = document.getElementById('themeToggle');
+  if(themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
   // review form
   const submitBtn = document.getElementById('submitReviewBtn');
