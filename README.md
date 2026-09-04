@@ -30,3 +30,7 @@ Notes and next steps
 
 License
 - Add a license file if you want to open-source this site.
+
+---
+
+Redeploy trigger: 2026-09-04T15:59:00Z
