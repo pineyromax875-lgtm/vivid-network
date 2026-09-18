@@ -1,0 +1,14 @@
+{
+  "name": "vivid-network",
+  "version": "1.0.0",
+  "description": "Vivid Network website and admin backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  }
+}
