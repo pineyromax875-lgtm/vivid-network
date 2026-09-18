@@ -11,38 +11,23 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#top" aria-label="Vivid Network home"><span class="logo">V</span><span>Vivid Network</span></a>
-      <nav class="nav" aria-label="Main navigation">
+      <nav class="nav" id="siteNav" aria-label="Main navigation">
         <a href="#features">Features</a><a href="#commands">Commands</a><a href="#reviews">Reviews</a><a href="#gallery">Gallery</a><a href="#about">About</a>
+        <details class="staff-menu"><summary>Staff</summary><div class="staff-dropdown"><a href="admin.html">Staff dashboard</a><a href="admin.html#reviews">Manage reviews</a><a href="admin.html#content">Manage content</a></div></details>
       </nav>
-      <a class="button primary" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Vivid</a>
+      <div class="header-actions"><a class="button primary" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Vivid</a><button class="menu-button" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteNav">☰</button></div>
     </div>
   </header>
 
   <main id="top">
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <p class="eyebrow">POWERFUL. RELIABLE. VIVID.</p>
-          <h1>Make your Discord community <span>stand out.</span></h1>
-          <p class="lead">Vivid Network gives your server powerful moderation, an engaging economy, and fun interactive tools in one easy-to-use bot.</p>
-          <div class="actions"><a class="button primary" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Vivid</a><a class="button secondary" href="https://discord.gg/nMzMuwAsJ" target="_blank" rel="noopener">Join support server</a></div>
-        </div>
-        <div class="hero-card"><div class="orb">✦</div><h2>Your server, upgraded.</h2><p>Smart tools for safer, more active communities.</p><div class="stats"><div><strong>24/7</strong><small>Available</small></div><div><strong>Fast</strong><small>Commands</small></div><div><strong>Easy</strong><small>Setup</small></div></div></div>
-      </div>
-    </section>
-
-    <section id="features" class="container section"><p class="eyebrow">EVERYTHING YOU NEED</p><h2>Built for better communities</h2><div class="cards"><article><div class="icon">🛡️</div><h3>Moderation</h3><p>Keep your community welcoming with practical moderation and server safety tools.</p></article><article><div class="icon">💎</div><h3>Economy</h3><p>Give members reasons to return with balances, rewards, and engaging progression.</p></article><article><div class="icon">🎮</div><h3>Fun & games</h3><p>Add personality to your server with interactive commands and community activities.</p></article></div></section>
-
+    <section class="hero"><div class="container hero-grid"><div><p class="eyebrow">POWERFUL. RELIABLE. VIVID.</p><h1>Make your Discord community <span>stand out.</span></h1><p class="lead">Vivid Network gives your server powerful moderation, an engaging economy, and fun interactive tools in one easy-to-use bot.</p><div class="actions"><a class="button primary" href="https://discord.com/oauth2/authorize?client_id=1545453747373740092&amp;permissions=8&amp;scope=bot%20applications.commands" target="_blank" rel="noopener">Invite Vivid</a><a class="button secondary" href="https://discord.gg/nMzMuwAsJ" target="_blank" rel="noopener">Join support server</a></div></div><div class="hero-card"><div class="orb">✦</div><h2>Your server, upgraded.</h2><p>Smart tools for safer, more active communities.</p><div class="stats"><div><strong>24/7</strong><small>Available</small></div><div><strong>Fast</strong><small>Commands</small></div><div><strong>Easy</strong><small>Setup</small></div></div></div></div></section>
+    <section id="features" class="container section"><p class="eyebrow">EVERYTHING YOU NEED</p><h2>Built for better communities</h2><div class="cards"><article><div class="icon">🛡️</div><h3>Moderation</h3><p>Keep your community welcoming with practical moderation and server safety tools.</p></article><article><div class="icon">💎</div><h3>Economy</h3><p>Give members reasons to return with balances, rewards, and engaging progression.</p></article><article><div class="icon">🎮</div><h3>Fun &amp; games</h3><p>Add personality to your server with interactive commands and community activities.</p></article></div></section>
     <section id="commands" class="container section"><p class="eyebrow">EXPLORE VIVID</p><h2>Popular commands</h2><div id="commandsList" class="command-list"><div class="command"><strong>/help</strong><span>Show help and available commands</span></div><div class="command"><strong>/ban</strong><span>Ban a user (moderation)</span></div><div class="command"><strong>/balance</strong><span>Show your economy balance</span></div></div></section>
-
     <section id="reviews" class="container section"><p class="eyebrow">COMMUNITY LOVE</p><h2>What communities say</h2><div id="reviewsList" class="cards reviews"><article><h3>Reliable and easy</h3><p>“Vivid gives our staff the tools they need without making setup complicated.”</p><small>— Vivid community member</small></article><article><h3>Made for Discord</h3><p>“The commands are quick, clear, and genuinely fun for our members.”</p><small>— Server owner</small></article></div></section>
-
     <section id="gallery" class="container section"><p class="eyebrow">COMMUNITY MOMENTS</p><h2>Gallery</h2><div id="galleryList" class="gallery-list"><p class="muted">Gallery images will appear here.</p></div></section>
-
     <section id="about" class="container section"><div class="about-card"><p class="eyebrow">ABOUT VIVID</p><h2>Built by people who love communities.</h2><div id="aboutContent"><p>Vivid Network is a community-driven Discord bot focused on moderation, engagement, and fun. Our goal is to give every server dependable tools that are simple to use and enjoyable for members.</p></div></div></section>
   </main>
-
-  <footer><div class="container footer-inner"><span>© <span id="year"></span> Vivid Network</span><a href="https://discord.gg/nMzMuwAsJ" target="_blank" rel="noopener">Need help? Join support</a></div></footer>
-  <script src="script.js" defer></script>
+  <footer><div class="container footer-inner"><span>© <span id="year"></span> Vivid Network</span><a href="admin.html">Staff dashboard</a><a href="https://discord.gg/nMzMuwAsJ" target="_blank" rel="noopener">Need help? Join support</a></div></footer>
+  <script src="script.js" defer></script><script>document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('menuToggle'),n=document.getElementById('siteNav');if(b&&n)b.addEventListener('click',()=>{const open=n.classList.toggle('open');b.setAttribute('aria-expanded',open);});});</script>
 </body>
 </html>
